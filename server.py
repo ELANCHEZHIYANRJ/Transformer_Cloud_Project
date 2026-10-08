@@ -8,7 +8,7 @@ app = Flask(__name__)
 def home():
     # Looks for index.html in the exact same directory where this server.py file runs
     current_folder = os.getcwd()
-    return send_from_directory(current_folder, 'index.html')
+    return send_from_directory(current_folder, 'Index.html')
 
 if __name__ == '__main__':
     # Dynamically reads the environment port provided by Render to prevent deployment crashes
