@@ -1,3 +1,8 @@
+# CRITICAL COMPILER PASS: The gevent monkey patch module MUST execute at line 1 
+# before importing any other system extensions, or the async data loop will deadlock!
+from gevent import monkey
+monkey.patch_all()
+
 import os
 import json
 from flask import Flask, send_from_directory
@@ -16,10 +21,10 @@ MQTT_TOPIC = "transformer/telemetry/elans_unique_project_node"
 
 @app.route('/')
 def home():
-    # Serves the index.html file cleanly from the root execution directory
+    # Serves the index.html template file directly from the root execution directory
     return send_from_directory(os.getcwd(), 'index.html')
 
-# Listens for your clean root WebSocket connection string choice
+# Maps the WebSocket client loop cleanly to your root endpoint string choice
 @sock.route('/')
 def live_stream(ws):
     print("New browser client hooked to live web dashboard!")
@@ -54,7 +59,7 @@ def on_message(client, userdata, msg):
             "val4": data.get("val4", "--")
         }
         
-        # Stream telemetry out to all globally open browser dashboard tabs instantly
+        # Broadcast the metrics to all globally open browser dashboard tabs instantly
         dead_clients = []
         for web_client in web_clients:
             try:
