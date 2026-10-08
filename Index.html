@@ -20,22 +20,20 @@
             <div class="label">Secondary Phase Voltage</div>
             <div class="value"><span id="data2">--</span><span class="unit">V</span></div>
         </div>
-        <div class="grid-sub-group">
-            <div class="card">
-                <div class="label">Oil Level</div>
-                <div class="value"><span id="data3">--</span><span class="unit">Cm</span></div>
-            </div>
-            <div class="card">
-                <div class="label">Core Temperature</div>
-                <div class="value"><span id="data4">--</span><span class="unit">°C</span></div>
-            </div>
+        <div class="card">
+            <div class="label">Oil Level</div>
+            <div class="value"><span id="data3">--</span><span class="unit">Cm</span></div>
+        </div>
+        <div class="card">
+            <div class="label">Core Temperature</div>
+            <div class="value"><span id="data4">--</span><span class="unit">°C</span></div>
         </div>
     </div>
 
     <div class="status">Dashboard Status: <span id="conn-status" style="color: #ff6b6b;">Disconnected</span></div>
 
     <script>
-        // FIXED: Targeted straight to your live Render public server footprint
+        // FIXED: Explicitly maps to your unique live Render web socket instance endpoint
         const socket = new WebSocket('wss://://onrender.com');
 
         socket.onopen = () => {
@@ -44,14 +42,14 @@
         };
 
         socket.onclose = () => {
-            document.getElementById('conn-status').innerText = 'Disconnected from Cloud';
+            document.getElementById('conn-status').innerText = 'Disconnected';
             document.getElementById('conn-status').style.color = '#ff6b6b';
         };
 
         socket.onmessage = (event) => {
             const payload = JSON.parse(event.data);
             
-            // Format floats to exactly 2 decimal places if valid, else fallback safely
+            // Format incoming string digits to 2 decimal places for a clean presentation dashboard layout
             if(payload.val1 !== undefined) {
                 let num1 = parseFloat(payload.val1);
                 document.getElementById('data1').innerText = isNaN(num1) ? payload.val1 : num1.toFixed(2);
