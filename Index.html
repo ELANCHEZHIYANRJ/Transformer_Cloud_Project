@@ -34,7 +34,7 @@
 
     <script>
         // FIXED: Explicitly maps to your unique live Render web socket instance endpoint
-        const socket = new WebSocket('wss://://onrender.com');
+        const socket = new WebSocket('wss://transformer-cloud-project.onrender.com');
 
         socket.onopen = () => {
             document.getElementById('conn-status').innerText = 'Connected & Listening Globally';
