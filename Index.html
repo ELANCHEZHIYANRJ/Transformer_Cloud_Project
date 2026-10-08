@@ -20,38 +20,54 @@
             <div class="label">Secondary Phase Voltage</div>
             <div class="value"><span id="data2">--</span><span class="unit">V</span></div>
         </div>
-        <div class="card">
-            <div class="label">Oil Level</div>
-            <div class="value"><span id="data3">--</span><span class="unit">Cm</span></div>
-        </div>
-        <div class="card">
-            <div class="label">Core Temperature</div>
-            <div class="value"><span id="data4">--</span><span class="unit">°C</span></div>
+        <div class="grid-sub-group">
+            <div class="card">
+                <div class="label">Oil Level</div>
+                <div class="value"><span id="data3">--</span><span class="unit">Cm</span></div>
+            </div>
+            <div class="card">
+                <div class="label">Core Temperature</div>
+                <div class="value"><span id="data4">--</span><span class="unit">°C</span></div>
+            </div>
         </div>
     </div>
 
     <div class="status">Dashboard Status: <span id="conn-status" style="color: #ff6b6b;">Disconnected</span></div>
 
     <script>
-        // Change this line to target your unique Render public URL string explicitly:
+        // FIXED: Targeted straight to your live Render public server footprint
         const socket = new WebSocket('wss://://onrender.com');
 
         socket.onopen = () => {
-            document.getElementById('conn-status').innerText = 'Connected & Listening';
+            document.getElementById('conn-status').innerText = 'Connected & Listening Globally';
             document.getElementById('conn-status').style.color = '#2ecc71';
         };
 
         socket.onclose = () => {
-            document.getElementById('conn-status').innerText = 'Disconnected';
+            document.getElementById('conn-status').innerText = 'Disconnected from Cloud';
             document.getElementById('conn-status').style.color = '#ff6b6b';
         };
 
         socket.onmessage = (event) => {
             const payload = JSON.parse(event.data);
-            if(payload.val1 !== undefined) document.getElementById('data1').innerText = payload.val1;
-            if(payload.val2 !== undefined) document.getElementById('data2').innerText = payload.val2;
-            if(payload.val3 !== undefined) document.getElementById('data3').innerText = payload.val3;
-            if(payload.val4 !== undefined) document.getElementById('data4').innerText = payload.val4;
+            
+            // Format floats to exactly 2 decimal places if valid, else fallback safely
+            if(payload.val1 !== undefined) {
+                let num1 = parseFloat(payload.val1);
+                document.getElementById('data1').innerText = isNaN(num1) ? payload.val1 : num1.toFixed(2);
+            }
+            if(payload.val2 !== undefined) {
+                let num2 = parseFloat(payload.val2);
+                document.getElementById('data2').innerText = isNaN(num2) ? payload.val2 : num2.toFixed(2);
+            }
+            if(payload.val3 !== undefined) {
+                let num3 = parseFloat(payload.val3);
+                document.getElementById('data3').innerText = isNaN(num3) ? payload.val3 : num3.toFixed(2);
+            }
+            if(payload.val4 !== undefined) {
+                let num4 = parseFloat(payload.val4);
+                document.getElementById('data4').innerText = isNaN(num4) ? payload.val4 : num4.toFixed(2);
+            }
         };
     </script>
 </body>
