@@ -12,6 +12,7 @@ web_clients = []
 # --- EMQX FREE PUBLIC BROKER NETWORK CONFIGURATION ---
 MQTT_SERVER = "broker.emqx.io"
 MQTT_PORT = 1883
+MQTT_TOPIC = "transformer/telemetry/elans_unique_project_node" # 👈 Isolated unique channel string
 
 @app.route('/')
 def home():
@@ -32,8 +33,8 @@ def live_stream(ws):
 # --- MQTT CLOUD BRIDGE EVENT HANDLERS ---
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        print("Success! Python script securely subscribed to global EMQX pipeline.")
-        client.subscribe("transformer/telemetry/unique_id") # 👈 Change unique_id to prevent overlaps
+        print("Success! Web server securely hooked into EMQX global pipeline.")
+        client.subscribe(MQTT_TOPIC)
     else:
         print(f"Cloud data bridge connection rejected with code: {rc}")
 
@@ -41,6 +42,7 @@ def on_message(client, userdata, msg):
     try:
         payload_str = msg.payload.decode('utf-8')
         data = json.loads(payload_str)
+        print("Intercepted Mesh Frame:", data)
         
         sensor_payload = {
             "val1": data.get("val1", "--"),
@@ -49,7 +51,7 @@ def on_message(client, userdata, msg):
             "val4": data.get("val4", "--")
         }
         
-        # Immediate cloud WebSocket broadcast straight down to your browser dashboard tabs
+        # Stream telemetry out to all globally open browser dashboard tabs instantly
         dead_clients = []
         for web_client in web_clients:
             try:
@@ -60,7 +62,7 @@ def on_message(client, userdata, msg):
             if dead in web_clients:
                 web_clients.remove(dead)
     except Exception as e:
-        print("Data compilation error:", e)
+        print("Data parsing error:", e)
 
 # Spin up public cluster broker interface
 mqtt_client = mqtt.Client()
@@ -74,7 +76,6 @@ except Exception as e:
     print(f"Could not reach EMQX node: {e}")
 
 if __name__ == '__main__':
-    # FIXED: Render injects automatic execution port numbers at initialization.
-    # Pulling 'PORT' dynamically guarantees your cloud container deploys without crashes!
+    # Dynamically inject the runtime environment port numbers passed down by Render
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
