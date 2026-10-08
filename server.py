@@ -16,6 +16,8 @@ MQTT_TOPIC = "transformer/telemetry/elans_unique_project_node" # 👈 Isolated u
 
 @app.route('/')
 def home():
+    # FIXED: Serves index.html directly from the root execution directory 
+    # to resolve the Render 404 Not Found layout error immediately!
     return send_from_directory(os.getcwd(), 'index.html')
 
 @sock.route('/live')
