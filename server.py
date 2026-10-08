@@ -16,13 +16,13 @@ MQTT_TOPIC = "transformer/telemetry/elans_unique_project_node"
 
 @app.route('/')
 def home():
-    # Serves the index.html layout file directly from the root execution directory
+    # Serves the index.html file cleanly from the root execution directory
     return send_from_directory(os.getcwd(), 'index.html')
 
-# FIXED: Changed the route from '/live' to '/' to perfectly match 
-# your new clean index.html WebSocket connection string choice!
+# Listens for your clean root WebSocket connection string choice
 @sock.route('/')
 def live_stream(ws):
+    print("New browser client hooked to live web dashboard!")
     web_clients.append(ws)
     try:
         while True:
