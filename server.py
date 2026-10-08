@@ -12,15 +12,16 @@ web_clients = []
 # --- EMQX FREE PUBLIC BROKER NETWORK CONFIGURATION ---
 MQTT_SERVER = "broker.emqx.io"
 MQTT_PORT = 1883
-MQTT_TOPIC = "transformer/telemetry/elans_unique_project_node" # 👈 Isolated unique channel string
+MQTT_TOPIC = "transformer/telemetry/elans_unique_project_node" 
 
 @app.route('/')
 def home():
-    # FIXED: Serves index.html directly from the root execution directory 
-    # to resolve the Render 404 Not Found layout error immediately!
+    # Serves the index.html layout file directly from the root execution directory
     return send_from_directory(os.getcwd(), 'index.html')
 
-@sock.route('/live')
+# FIXED: Changed the route from '/live' to '/' to perfectly match 
+# your new clean index.html WebSocket connection string choice!
+@sock.route('/')
 def live_stream(ws):
     web_clients.append(ws)
     try:
